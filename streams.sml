@@ -8,6 +8,7 @@ signature STREAM =
     val flatMap: ('t -> 'r stream) -> 't stream -> 'r stream
     val fold   : ('a -> 't -> 'a) -> 'a -> 't stream -> 'a
     val ofArray : 't array -> 't stream
+    val length : 't stream -> int
     val sum :  int stream -> int
   end
 
@@ -38,6 +39,7 @@ structure Stream : STREAM =
 	   streamf (fn value => (x := f (!x) value; true));
 	   !x
        end
+   fun length s = fold (fn a => fn _ => a + 1) 0 s
    fun sum s = fold (fn a => fn ss => a + ss) 0 s
    fun ofArray arr = 
        let val gen = fn iterf =>
@@ -55,25 +57,64 @@ structure Stream : STREAM =
        end
  end
 
+fun lengthBaseline arr = 
+    let
+	val counter = ref 0
+	val length = ref 0
+	val size = Array.length arr
+    in
+	while !counter < size do (
+	    let 
+		val item = Array.sub(arr, !counter)
+	    in
+		length := (if item > 10 andalso item > 11 andalso item > 12 andalso item > 13 andalso item > 14 
+			      andalso item > 15 andalso item > 16 andalso item > 17 then
+			      !length +1 
+			  else
+			      !length)
+	    end;
+	    counter := !counter + 1
+	);
+	!length
+    end
+
+fun measure (s,f) =
+let
+    val timer = ref (Timer.startRealTimer ());
+    val ret = f()
+    val time = Timer.checkRealTimer(!timer)
+in
+    print (s ^ " time: " ^ Time.toString(time) ^ " sec/op\n");
+    ret
+end
+
 (* Test Program *)
 structure Program = struct
 
 fun main () =
     let
 	val _ = print ("Running\n");
-	val v = Stream.ofArray(Array.tabulate (1000, fn i => i));
-	fun sumF values = Stream.sum(v);
-        fun sumOfSquaresF values = ((Stream.fold (fn a => fn s => a + s) 0) o (Stream.map(fn x => x * x))) values
+	val backingArr = Array.tabulate (600000000, fn i => i);
+	val v = Stream.ofArray(backingArr);
+	fun length values = Stream.length values;
+        fun length' values = ((Stream.fold (fn a => fn s => a + s) 0) o (Stream.map(fn x => x * x))) values
+	fun length'' values = (Stream.length o Stream.filter(fn v => v > 10) 
+			                     o Stream.filter(fn v => v > 11)
+					     o Stream.filter(fn v => v > 12)
+					     o Stream.filter(fn v => v > 13)
+					     o Stream.filter(fn v => v > 14)
+					     o Stream.filter(fn v => v > 15)
+					     o Stream.filter(fn v => v > 16)
+					     o Stream.filter(fn v => v > 17)) values
     in
 	let 
-	    val sum = sumF v;
-	    val sumOfSquares = sumOfSquaresF v
+	    val lengthRet = measure("Streams", fn _ => length''(v));
+	    val lengthBaselineRet = measure ("Baseline", fn _ => lengthBaseline(backingArr))
 	in
-	    print ("Sum = " ^ Int.toString(sum) ^ "\n");
-	    print ("SumOfSquares = " ^ Int.toString(sumOfSquares) ^ "\n")
+	    print ("Streams  Length = " ^ Int.toString(lengthRet) ^ "\n");
+	    print ("Baseline Length = " ^ Int.toString(lengthBaselineRet) ^ "\n")
 	end
     end
 end
-
 
 val _ = Program.main ()
