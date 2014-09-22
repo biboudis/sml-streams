@@ -2,17 +2,17 @@
 
 signature STREAM = 
   sig
-    type 'T stream
-    val map    : ('T -> 'R) -> 'T stream -> 'R stream
-    val filter : ('T -> bool) -> 'T stream -> 'T stream
-    val flatMap: ('T -> 'R stream) -> 'T stream -> 'R stream
-    val fold   : ('A -> 'T -> 'A) -> 'A -> 'T stream -> 'A
-    val ofArray : 'T array -> 'T stream
+    type 't stream
+    val map    : ('t -> 'r) -> 't stream -> 'r stream
+    val filter : ('t -> bool) -> 't stream -> 't stream
+    val flatMap: ('t -> 'r stream) -> 't stream -> 'r stream
+    val fold   : ('a -> 't -> 'a) -> 'a -> 't stream -> 'a
+    val ofArray : 't array -> 't stream
   end
 
 structure Stream : STREAM =
  struct
-   datatype 'T stream = Stream of ('T -> bool) -> unit
+   datatype 't stream = Stream of ('t -> bool) -> unit
    fun map f s = 
      let val (Stream streamf) = s
      in
