@@ -55,21 +55,22 @@ structure Stream : STREAM =
        end
  end
 
-(* Test *)
+(* Test Program *)
 structure Program = struct
 
 fun main () =
     let
 	val _ = print ("Running\n");
-	val v = Stream.ofArray(Array.tabulate (10000, fn i => i));
-	fun sumEvenF values = ((Stream.fold (fn a => fn s => a + s) 0) o (Stream.filter (fn i => (i mod 2) = 0))) values
+	val v = Stream.ofArray(Array.tabulate (1000, fn i => i));
+	fun sumF values = Stream.sum(v);
+        fun sumOfSquaresF values = ((Stream.fold (fn a => fn s => a + s) 0) o (Stream.map(fn x => x * x))) values
     in
 	let 
-	    val sum = Stream.sum v;
-	    val sumEven = sumEvenF v
+	    val sum = sumF v;
+	    val sumOfSquares = sumOfSquaresF v
 	in
 	    print ("Sum = " ^ Int.toString(sum) ^ "\n");
-	    print ("SumEven = " ^ Int.toString(sumEven) ^ "\n")
+	    print ("SumOfSquares = " ^ Int.toString(sumOfSquares) ^ "\n")
 	end
     end
 end
