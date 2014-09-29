@@ -67,8 +67,7 @@ fun lengthBaseline arr =
 	    let 
 		val item = Array.sub(arr, !counter)
 	    in
-		length := (if item > 10 andalso item > 11 andalso item > 12 andalso item > 13 andalso item > 14 
-			      andalso item > 15 andalso item > 16 andalso item > 17 then
+		length := (if item > 10 andalso item > 11 andalso item > 12 andalso item > 13 then
 			      !length +1 
 			  else
 			      !length)
@@ -94,7 +93,7 @@ structure Program = struct
 fun main () =
     let
 	val _ = print ("Running\n");
-	val backingArr = Array.tabulate (600000000, fn i => i);
+	val backingArr = Array.tabulate (300000000, fn i => i);
 	val v = Stream.ofArray(backingArr);
 	fun length values = Stream.length values;
         fun length' values = ((Stream.fold (fn a => fn s => a + s) 0) o (Stream.map(fn x => x * x))) values
@@ -103,9 +102,7 @@ fun main () =
 					     o Stream.filter(fn v => v > 12)
 					     o Stream.filter(fn v => v > 13)
 					     o Stream.filter(fn v => v > 14)
-					     o Stream.filter(fn v => v > 15)
-					     o Stream.filter(fn v => v > 16)
-					     o Stream.filter(fn v => v > 17)) values
+					     o Stream.filter(fn v => v > 15)) values
     in
 	let 
 	    val lengthRet = measure("Streams", fn _ => length''(v));
