@@ -11,7 +11,7 @@ sudo yum install mlton
 ```
 Compile with MLton:
 ```shell
-milton streams.sml
+mlton streams.sml
 ```
 and run:
 ```shell
