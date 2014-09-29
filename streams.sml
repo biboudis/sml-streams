@@ -104,16 +104,16 @@ fun cartBaseline arr1 arr2 =
 	while !counter1 < size1 do (
 	    let 
 		val item1 = Array.sub(arr1, !counter1);
-		val _ = print(Int.toString(item1)^" ")
 	    in
 		while !counter2 < size2 do (
-		    sum :=  let val item2 = Array.sub(arr2, !counter2)
-			    in
-				!sum + item1*item2
-			    end;
-		    counter2 := !counter2 + 1
+		   let val item2 = Array.sub(arr2, !counter2)
+		   in
+		       sum := !sum + item1*item2
+		   end;
+		   counter2 := !counter2 + 1
 		)
 	    end;
+	    counter2 := 0;
 	    counter1 := !counter1 + 1
 	);
 	!sum
@@ -137,7 +137,7 @@ fun main () =
 	val _ = print ("Running\n");
 	val backingArr = Array.tabulate (3000000, fn i => i);
 	val backingArrCart1 = Array.tabulate (500, fn i => i);
-	val backingArrCart2 = Array.tabulate (20, fn i => i);
+	val backingArrCart2 = Array.tabulate (50, fn i => i);
 	val v = Stream.ofArray backingArr;
 	val v1 = Stream.ofArray backingArrCart1;
 	val v2 = Stream.ofArray backingArrCart2;
