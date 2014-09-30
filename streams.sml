@@ -4,6 +4,8 @@ signature STREAM = sig
     type 't stream
     val map    : ('t -> 'r) -> 't stream -> 'r stream
     val filter : ('t -> bool) -> 't stream -> 't stream
+    val takeWhile : ('t -> bool) -> 't stream -> 't stream
+    val skip : int -> 't stream -> 't stream
     val flatMap: ('t -> 'r stream) -> 't stream -> 'r stream
     val fold   : ('a -> 't -> 'a) -> 'a -> 't stream -> 'a
     val ofArray : 't array -> 't stream
@@ -13,27 +15,22 @@ end
 
 structure Stream : STREAM = struct 
   datatype 't stream = Stream of ('t -> bool) -> unit
-  fun map f s = 
-      let val (Stream streamf) = s
-      in
-	  let val iter = fn iterf => streamf (fn value => iterf (f value))
-	  in
-	      Stream iter
-	  end
-      end
+
+  fun map f (Stream streamf) = 
+      Stream (fn iterf => streamf (fn value => iterf (f value)))
 	  
   fun filter pred (Stream streamf) = 
       Stream (fn iterf => 
 		 streamf(fn value => if pred(value) = true then iterf(value) else true))
 	  
   fun flatMap f (Stream outerf) = 
-      Stream(fn iterf => 
-		outerf(fn value => 
-			  let val (Stream innerf) = f(value)
-			  in
-			      innerf(iterf);
-			      true
-			  end))
+      Stream (fn iterf => 
+		 outerf(fn value => 
+			   let val (Stream innerf) = f(value)
+			   in
+			       innerf(iterf);
+			       true
+			   end))
 	  
   fun fold f a (Stream streamf) = 
       let val x = ref a
@@ -46,15 +43,42 @@ structure Stream : STREAM = struct
 
   fun sum s = fold (fn a => fn ss => a + ss) (LargeInt.fromInt 0) s
 
+  fun filter pred (Stream streamf) = 
+      Stream (fn iterf => 
+		 streamf(fn value => if pred(value) = true 
+				     then iterf(value) 
+				     else true))
+
+  fun takeWhile pred (Stream streamf) = 
+      Stream (fn iterf => 
+		 streamf(fn value => if pred(value) = true 
+				     then iterf(value) 
+				     else false))
+
+  fun skip n (Stream streamf) = 
+      let val count = ref 0
+	  val iter = fn iterf => 
+			streamf(fn value => 
+				   let val _ = count := !count+1
+				   in
+				       if !count > n
+				       then iterf(value) 
+				       else true
+				   end)
+      in
+	  Stream iter
+      end
+
   fun ofArray arr = 
       let val gen = 
 	   fn iterf =>
 	      let
 		  val counter = ref 0
+		  val cont = ref true
 		  val size = Array.length arr
 	      in
-		  while !counter < size do (
-		      iterf (Array.sub(arr, !counter));
+		  while !counter < size andalso !cont do (
+		      cont := iterf (Array.sub(arr, !counter));
 		      counter := !counter + 1
 		  )
 	      end
