@@ -1,7 +1,7 @@
 sml-streams
 ===========
 
-Streams in Standard ML of New Jersey.
+Bulk memory operations with Standard ML in MLton.
 
 ### Test
 
