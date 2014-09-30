@@ -17,6 +17,14 @@ and run:
 ```shell
 ./streams
 ```
+### Benchmarks
+```shell
+
+(Outer=5000000 , Inner=50)
+Streams cart time: 1.857 sec/op
+Baseline cart time: 1.195 sec/op
+```
+
 ### References
 
 * [Clash of the Lambdas](http://arxiv.org/abs/1406.6631)
