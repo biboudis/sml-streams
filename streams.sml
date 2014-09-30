@@ -12,66 +12,58 @@ signature STREAM = sig
 end
 
 structure Stream : STREAM = struct 
-datatype 't stream = Stream of ('t -> bool) -> unit
-fun map f s = 
-    let val (Stream streamf) = s
-    in
-	let val iter = fn iterf => streamf (fn value => iterf (f value))
-	in
-	    Stream iter
-	end
-    end
-	
-fun filter pred s = 
-    let val (Stream streamf) = s
-    in
-	let val iter = 
-	     fn iterf => 
-		streamf(fn value => if pred(value) = true then iterf(value) else true)
-	in
-	    Stream iter
-	end
-    end
-fun flatMap f s = 
-    let val (Stream outerf) = s
-    in
-	let 
-	    val iter = fn iterf => 
-			  outerf(fn value => let val (Stream innerf) = f(value)
-					     in
-						 innerf(iterf);
-						 true
-					     end)
-	in 
-	    Stream(iter)
-	end
-    end
-	
-fun fold f a s = 
-    let val (Stream streamf) = s
-	and x = ref a
-    in
-	streamf (fn value => (x := f (!x) value; true));
-	!x
-    end
-fun length s = fold (fn a => fn _ => a + 1) 0 s
-fun sum s = fold (fn a => fn ss => a + ss) (LargeInt.fromInt 0) s
-fun ofArray arr = 
-    let val gen = 
-	 fn iterf =>
-	    let
-		val counter = ref 0
-		val size = Array.length arr
-	    in
-		while !counter < size do (
-		    iterf (Array.sub(arr, !counter));
-		    counter := !counter + 1
-		)
-	    end
-    in
-	Stream gen
-    end
+  datatype 't stream = Stream of ('t -> bool) -> unit
+  fun map f s = 
+      let val (Stream streamf) = s
+      in
+	  let val iter = fn iterf => streamf (fn value => iterf (f value))
+	  in
+	      Stream iter
+	  end
+      end
+	  
+  fun filter pred (Stream streamf) = 
+      Stream (fn iterf => 
+		 streamf(fn value => if pred(value) = true then iterf(value) else true))
+	  
+  fun flatMap f (Stream outerf) = 
+      Stream(fn iterf => 
+		outerf(fn value => 
+			  let val (Stream innerf) = f(value)
+			  in
+			      innerf(iterf);
+			      true
+			  end))
+	  
+  fun fold f a (Stream streamf) = 
+      let val x = ref a
+      in
+	  streamf (fn value => (x := f (!x) value; true));
+	  !x
+      end
+	  
+  fun length s = fold (fn a => fn _ => a + 1) 0 s
+
+  fun sum s = fold (fn a => fn ss => a + ss) (LargeInt.fromInt 0) s
+
+  fun ofArray arr = 
+      let val gen = 
+	   fn iterf =>
+	      let
+		  val counter = ref 0
+		  val size = Array.length arr
+	      in
+		  while !counter < size do (
+		      iterf (Array.sub(arr, !counter));
+		      counter := !counter + 1
+		  )
+	      end
+      in
+	  Stream gen
+      end
 end
+
+(* Baseline functions *)
 
 fun filters_6_baseline arr = 
     let
@@ -140,8 +132,8 @@ fun main () =
 
 	(* Backing Arrays *)
 	val backingArr = Array.tabulate (3000000, fn i => i);
-	val backingArrCart1 = Array.tabulate (50000, fn i => Int.toLarge i);
-	val backingArrCart2 = Array.tabulate (500, fn i => Int.toLarge i);
+	val backingArrCart1 = Array.tabulate (100, fn i => Int.toLarge i);
+	val backingArrCart2 = Array.tabulate (10, fn i => Int.toLarge i);
 
 	(* Stream wrapping *)
 	val v = Stream.ofArray backingArr;
