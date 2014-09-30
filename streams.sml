@@ -5,7 +5,9 @@ signature STREAM = sig
     val map    : ('t -> 'r) -> 't stream -> 'r stream
     val filter : ('t -> bool) -> 't stream -> 't stream
     val takeWhile : ('t -> bool) -> 't stream -> 't stream
+    val skipWhile : ('t -> bool) -> 't stream -> 't stream
     val skip : int -> 't stream -> 't stream
+    val take : int -> 't stream -> 't stream
     val flatMap: ('t -> 'r stream) -> 't stream -> 'r stream
     val fold   : ('a -> 't -> 'a) -> 'a -> 't stream -> 'a
     val ofArray : 't array -> 't stream
@@ -45,13 +47,13 @@ structure Stream : STREAM = struct
 
   fun filter pred (Stream streamf) = 
       Stream (fn iterf => 
-		 streamf(fn value => if pred(value) = true 
+		 streamf(fn value => if pred(value) 
 				     then iterf(value) 
 				     else true))
 
   fun takeWhile pred (Stream streamf) = 
       Stream (fn iterf => 
-		 streamf(fn value => if pred(value) = true 
+		 streamf(fn value => if pred(value) 
 				     then iterf(value) 
 				     else false))
 
@@ -64,6 +66,34 @@ structure Stream : STREAM = struct
 				       if !count > n
 				       then iterf(value) 
 				       else true
+				   end)
+      in
+	  Stream iter
+      end
+
+  fun skipWhile pred (Stream streamf) = 
+      Stream (fn iterf => 
+		 streamf(fn value => 
+			    let val shortcut = ref true
+			    in
+				if !shortcut andalso pred(value)
+				then true
+				else 
+				    let val _ = shortcut := true
+				    in
+					iterf(value)
+				    end
+			    end))
+
+  fun take n (Stream streamf) = 
+      let val count = ref 0
+	  val iter = fn iterf => 
+			streamf(fn value => 
+				   let val _ = count := !count+1
+				   in
+				       if !count < n
+				       then iterf(value) 
+				       else false
 				   end)
       in
 	  Stream iter
