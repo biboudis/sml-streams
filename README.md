@@ -37,3 +37,4 @@ Baseline cart time: 4.723 sec/op
 * [Clash of the Lambdas](http://arxiv.org/abs/1406.6631)
 * [Nessos/Streams](https://github.com/nessos/Streams)
 * [MLton](http://mlton.org/)
+* Found out that similar pattern appears in [MLton/Iterator combinators](http://mlton.org/ForLoops), [iter.sml](https://github.com/MLton/mltonlib/blob/master/com/ssh/extended-basis/unstable/detail/control/iter.sml) / [iter.sig](https://github.com/MLton/mltonlib/blob/master/com/ssh/extended-basis/unstable/public/control/iter.sig)
