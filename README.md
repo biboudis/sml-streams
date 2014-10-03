@@ -1,7 +1,10 @@
 sml-streams
 ===========
 
-Bulk memory operations with Standard ML in MLton.
+Bulk memory operations with Standard ML in MLton. The pattern is based on pipelines that are composed via continuations, where a source is wrapped as a stream, transformations are applied via lazy operations and eager combinators force the effects on the backing, in-memory collection of items:
+```
+source - lazy - lazy - lazy - eager
+```
 
 ### Test
 
