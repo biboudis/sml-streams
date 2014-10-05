@@ -2,3 +2,5 @@
 *.o
 *.s
 *.c
+/.streams.ph
+/build/

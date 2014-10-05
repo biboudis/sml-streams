@@ -1,7 +1,0 @@
-Library
-	signature STREAM
-	structure Stream
-is
-	streams.sml
-	$/basis.cm
-	$/smlnj-lib.cm
