@@ -1,0 +1,8 @@
+(* Aggelos Biboudis *)
+
+local
+  $(SML_LIB)/basis/basis.mlb
+  ../streams.mlb
+  bench-streams.sml
+in
+end
