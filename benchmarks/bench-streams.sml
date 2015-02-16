@@ -88,11 +88,7 @@ fun main () =
 				o Stream.filter(fn v => v > 15)) values;
 	fun cart v1' v2' = (Stream.sum o Stream.flatMap(fn x => Stream.map (fn y => x * y) v2')) v1'
 
-	fun flatmaps_takes v = Stream.take 6 (Stream.flatMap(fn x => let val _ = print("Inner\n") 
-								     in
-									 Stream.take 2 (Stream.map (fn y => (x, y)) v) 
-								     end) 
-							    v)
+	fun flatmaps_takes v = Stream.take 6 (Stream.flatMap(fn x => Stream.take 2 (Stream.map (fn y => (x, y)) v)) v)
     in
 	let val _ = 1
 	    (* Benchmark Execution *)
