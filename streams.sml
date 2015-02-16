@@ -1,7 +1,7 @@
 (* Aggelos Biboudis *)
 
 structure Stream : STREAM = struct 
-  datatype 't stream = Stream of ('t -> bool) -> unit
+  datatype 't stream = Stream of ('t -> bool) -> bool
 
   fun map f (Stream streamf) = 
       Stream (fn iterf => streamf (fn value => iterf (f value)))
@@ -15,9 +15,9 @@ structure Stream : STREAM = struct
 		 outerf(fn value => 
 			   let val (Stream innerf) = f(value)
 			   in
-			       innerf(iterf);
-			       true
-			   end))
+			       innerf(iterf)
+			   end
+	     ))
 	  
   fun fold f a (Stream streamf) = 
       let val x = ref a
@@ -100,7 +100,8 @@ structure Stream : STREAM = struct
 		  while !counter < size andalso !cont do (
 		      cont := iterf (Array.sub(arr, !counter));
 		      counter := !counter + 1
-		  )
+		  );
+		  !cont
 	      end
       in
 	  Stream gen

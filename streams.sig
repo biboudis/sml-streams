@@ -15,5 +15,5 @@ signature STREAM = sig
     val fold   : ('a -> 't -> 'a) -> 'a -> 't stream -> 'a
     val length : 't stream -> int
     val sum :  LargeInt.int stream -> LargeInt.int
-    val iter : ('t -> bool) -> 't stream -> unit
+    val iter : ('t -> bool) -> 't stream -> bool
 end

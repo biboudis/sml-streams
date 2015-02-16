@@ -66,7 +66,7 @@ fun main () =
 	val _ = print ("Running\n");
 
 	(* Backing Arrays *)
-	val backingArr = Array.tabulate (3000000, fn i => i);
+	val backingArr = Array.tabulate (10, fn i => i);
 	val backingArrCart1 = Array.tabulate (100, fn i => Int.toLarge i);
 	val backingArrCart2 = Array.tabulate (10, fn i => Int.toLarge i);
 
@@ -87,19 +87,32 @@ fun main () =
 				o Stream.filter(fn v => v > 14)
 				o Stream.filter(fn v => v > 15)) values;
 	fun cart v1' v2' = (Stream.sum o Stream.flatMap(fn x => Stream.map (fn y => x * y) v2')) v1'
+
+	fun flatmaps_takes v = Stream.take 6 (Stream.flatMap(fn x => let val _ = print("Inner\n") 
+								     in
+									 Stream.take 2 (Stream.map (fn y => (x, y)) v) 
+								     end) 
+							    v)
     in
-	let 
+	let val _ = 1
 	    (* Benchmark Execution *)
-	    val lengthRet = measure("Streams filters_6", fn _ => filters_6 v);
-	    val lengthBaselineRet = measure ("Baseline filters_6", fn _ => filters_6_baseline backingArr);
-	    val cartRet = measure("Streams cart", fn _ => cart v1 v2);
-	    val cartBaselineRet  = measure ("Baseline cart", fn _ => cartBaseline backingArrCart1 backingArrCart2)
+	    (* val lengthRet = measure("Streams filters_6", fn _ => filters_6 v); *)
+	    (* val lengthBaselineRet = measure ("Baseline filters_6", fn _ => filters_6_baseline backingArr); *)
+	    (* val cartRet = measure("Streams cart", fn _ => cart v1 v2); *)
+	    (* val cartBaselineRet  = measure ("Baseline cart", fn _ => cartBaseline backingArrCart1 backingArrCart2) *)
+	   
 	in
-	    print ("\nValidation\n");
-	    print ("Streams  filters_6 = " ^ Int.toString(lengthRet) ^ "\n");
-	    print ("Baseline filters_6 = " ^ Int.toString(lengthBaselineRet) ^ "\n");
-	    print ("Streams  cart     = " ^ LargeInt.toString(cartRet) ^ "\n");
-	    print ("Baseline cart     = " ^ LargeInt.toString(cartBaselineRet) ^ "\n")
+	    (* print ("\nValidation\n"); *)
+	    (* print ("Streams  filters_6 = " ^ Int.toString(lengthRet) ^ "\n"); *)
+	    (* print ("Baseline filters_6 = " ^ Int.toString(lengthBaselineRet) ^ "\n"); *)
+	    (* print ("Streams  cart     = " ^ LargeInt.toString(cartRet) ^ "\n"); *)
+	    (* print ("Baseline cart     = " ^ LargeInt.toString(cartBaselineRet) ^ "\n") *)
+	    Stream.iter (fn t => 
+			    let val (x, y) = t 
+			    in 
+				print("Result " ^ Int.toString(x) ^ " " ^ Int.toString(y) ^ "\n");
+				true
+			    end) (flatmaps_takes v)									
 	end
     end
 end
