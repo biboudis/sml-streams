@@ -26,6 +26,9 @@ structure Stream : STREAM = struct
 	  !x
       end
 	  
+  fun iter f (Stream streamf) = 
+      streamf f
+
   fun length s = fold (fn a => fn _ => a + 1) 0 s
 
   fun sum s = fold (fn a => fn ss => a + ss) (LargeInt.fromInt 0) s
@@ -43,15 +46,16 @@ structure Stream : STREAM = struct
 				     else false))
 
   fun skip n (Stream streamf) = 
-      let val count = ref 0
-	  val iter = fn iterf => 
-			streamf(fn value => 
-				   let val _ = count := !count+1
-				   in
-				       if !count > n
-				       then iterf(value) 
-				       else true
-				   end)
+      let val iter = fn iterf => 
+			let val count = ref 0 in
+			    streamf(fn value => 
+				       let val _ = count := !count+1
+				       in
+					   if !count > n
+					   then iterf(value) 
+					   else true
+				       end)
+			end
       in
 	  Stream iter
       end
@@ -71,15 +75,16 @@ structure Stream : STREAM = struct
 			    end))
 
   fun take n (Stream streamf) = 
-      let val count = ref 0
-	  val iter = fn iterf => 
-			streamf(fn value => 
-				   let val _ = count := !count+1
-				   in
-				       if !count < n
-				       then iterf(value) 
-				       else false
-				   end)
+      let val iter = fn iterf => 
+			let val count = ref 0 in
+			  streamf(fn value => 
+				     let val _ = count := !count+1
+				     in
+					 if !count <= n
+					 then iterf(value) 
+					 else false
+				     end)
+			end
       in
 	  Stream iter
       end
