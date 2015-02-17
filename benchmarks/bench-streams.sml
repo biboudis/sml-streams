@@ -1,3 +1,9 @@
+infix  3 >>     fun f >> y = f y                  (* Left application  *)
+infixr 3 <<     fun x << f = f x                  (* Right application *)
+infix  1 |>     val op|> = op<<      (* Left pipe *)
+infixr 1 <|     val op<| = op>>      (* Right pipe *)
+
+
 (* Baseline functions *)
 
 fun filters_6_baseline arr = 
@@ -87,10 +93,8 @@ fun main () =
 				o Stream.filter(fn v => v > 14)
 				o Stream.filter(fn v => v > 15)) values;
 	fun cart v1' v2' = (Stream.sum o Stream.flatMap(fn x => Stream.map (fn y => x * y) v2')) v1'
-
-	fun flatmaps_takes v = Stream.take 6 (Stream.flatMap(fn x => Stream.take 2 (Stream.map (fn y => (x, y)) v)) v)
     in
-	let val _ = 1
+	let val _ = 1 
 	    (* Benchmark Execution *)
 	    (* val lengthRet = measure("Streams filters_6", fn _ => filters_6 v); *)
 	    (* val lengthBaselineRet = measure ("Baseline filters_6", fn _ => filters_6_baseline backingArr); *)
@@ -103,12 +107,20 @@ fun main () =
 	    (* print ("Baseline filters_6 = " ^ Int.toString(lengthBaselineRet) ^ "\n"); *)
 	    (* print ("Streams  cart     = " ^ LargeInt.toString(cartRet) ^ "\n"); *)
 	    (* print ("Baseline cart     = " ^ LargeInt.toString(cartBaselineRet) ^ "\n") *)
-	    Stream.iter (fn t => 
-			    let val (x, y) = t 
-			    in 
-				print("Result " ^ Int.toString(x) ^ " " ^ Int.toString(y) ^ "\n");
-				true
-			    end) (flatmaps_takes v)									
+
+	    (* Pipe Finally *)
+	    backingArr 
+	       |> Stream.ofArray 
+	       |> Stream.flatMap(fn x => v |> Stream.map(fn y => (x,y)) 
+					   |> Stream.take 2) 
+	       |> Stream.take 6 
+	       |> Stream.iter (fn t => 
+				  let val (x, y) = t 
+				  in 
+				     print("Result " ^ Int.toString(x) ^ " " ^ Int.toString(y) ^ "\n");
+				     true
+				  end)
+
 	end
     end
 end

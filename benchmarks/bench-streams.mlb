@@ -1,5 +1,4 @@
 (* Aggelos Biboudis *)
-
 local
   $(SML_LIB)/basis/basis.mlb
   ../streams.mlb
