@@ -1,25 +1,29 @@
 sml-streams
 ===========
 
-Bulk memory operations with Standard ML in MLton. The pattern is based on pipelines that are composed via continuations, where a source is wrapped as a stream, transformations are applied via lazy operations and eager combinators force the effects on the backing, in-memory collection of items:
+The vision: Bulk memory operations with Standard ML in MLton. The pattern is based on pipelines that are composed via continuations, where a source is wrapped as a stream, transformations are applied via lazy operations and eager combinators force the effects on the backing, in-memory collection of items:
 ```
 source - lazy - lazy - lazy - eager
 ```
 
 ### Test
+To experiment with the library install MLton and ```make``` the project:
+```shell
+> sudo yum install mlton
+> make bench
+> cd build 
+> ./bench-streams
+```
 
-Install MLton (e.g. for fedora):
-```shell
-sudo yum install mlton
+### Example
+```sml
+Array.tabulate (10, fn i => i)
+    |> Stream.ofArray
+    |> Stream.map(fn x => x * x)
+    |> Stream.take 6
+    |> Stream.sum
 ```
-Compile with MLton:
-```shell
-mlton streams.sml
-```
-and run:
-```shell
-./streams
-```
+
 ### Benchmarks
 ```shell
 # Outer=1000000, Inner=10
@@ -34,7 +38,6 @@ Baseline cart time: 1.195 sec/op
 Streams cart time: 7.151 sec/op
 Baseline cart time: 4.723 sec/op
 ```
-
 ### References
 
 * Inspired by our work on [Clash of the Lambdas](http://biboudis.github.io/clashofthelambdas/)
