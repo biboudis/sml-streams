@@ -15,7 +15,7 @@ To experiment with the library install MLton and ```make``` the project:
 > ./bench-streams
 ```
 
-### Example
+### Example (with F#-like pipe operators)
 ```sml
 Array.tabulate (10, fn i => i)
     |> Stream.ofArray
