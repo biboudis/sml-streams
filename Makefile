@@ -25,3 +25,6 @@ $(BENCH): bench-% : %
 bench : $(BENCH)
 
 .PHONY: $(BENCH-SET)
+
+clean:
+	rm -rf $(BUILD)/ .*.ph
