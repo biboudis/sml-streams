@@ -1,7 +1,7 @@
 (* Aggelos Biboudis *)
 local
   $(SML_LIB)/basis/basis.mlb
-  ../streams.mlb
+  ../streams.sml
   bench-streams.sml
 in
 end

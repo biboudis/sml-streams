@@ -2,9 +2,5 @@
 
 local
   $(SML_LIB)/basis/basis.mlb
-  streams.sig
-  streams.sml
- in
-  signature STREAM
-  structure Stream
+in
 end
