@@ -4,10 +4,16 @@ fun recur (z: 'a, f: 'a * ('a -> 'b) -> 'b): 'b =
     in loop z
     end
 
+(* datatype 't seq = Empty  *)
+(* 		| Cons of 'a * (unit -> 'a seq) *)
+				  
 signature STREAM = sig
     type 't stream
+
     val ofArray : 't array -> 't stream
+    (* val toSeq : 't stream -> 't seq *)
     val naturals : int stream
+
     val map    : ('t -> 'r) -> 't stream -> 'r stream
     val filter : ('t -> bool) -> 't stream -> 't stream
     val takeWhile : ('t -> bool) -> 't stream -> 't stream
@@ -29,7 +35,7 @@ structure Stream : STREAM = struct
      -return false if the function passed returns false  
   *) 
   datatype 't stream = Stream of ('t -> bool) -> bool
-						    
+		    
   (* Creation of stream from an array *)
   fun ofArray arr = 
       let val gen = 
