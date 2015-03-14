@@ -68,8 +68,8 @@ structure Program = struct
   fun main () =
       let (* Backing Arrays *)
 	 val backingArr = Array.tabulate (3000000, fn i => i);
-	 val backingArrCart1 = Array.tabulate (1000000, fn i => Int.toLarge i);
-	 val backingArrCart2 = Array.tabulate (1000, fn i => Int.toLarge i);
+	 val backingArrCart1 = Array.tabulate (100000, fn i => Int.toLarge i);
+	 val backingArrCart2 = Array.tabulate (100, fn i => Int.toLarge i);
 	 
 	 (* Stream wrapping *)
 	 val v = Stream.ofArray backingArr;
