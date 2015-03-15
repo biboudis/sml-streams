@@ -67,9 +67,9 @@ structure Stream : STREAM = struct
 
   fun filter pred (Stream streamf) = 
       let fun iter iterf = 
-		 streamf(fn value => if pred(value) 
-				     then iterf(value) 
-				     else true)
+	      streamf(fn value => if pred(value) 
+				  then iterf(value) 
+				  else true)
       in Stream(iter)
       end
 	     
@@ -99,10 +99,10 @@ structure Stream : STREAM = struct
       let fun iter iterf = 
 	      let val count = ref 0 
 		  fun iterf' a = let val count' = !count
-				in if count' < n
-				   then (count := count' + 1; true)
-				   else iterf(a)
-					  end
+				 in if count' < n
+				    then (count := count' + 1; true)
+				    else iterf(a)
+				 end
 	      in streamf(iterf')
 	      end
       in Stream iter
@@ -139,7 +139,7 @@ structure Stream : STREAM = struct
 		  fun iterf' a = if pred(a)
 				 then iterf(a)
 				 else (early:=true; false)
-			in streamf(iterf') orelse !early
+	      in streamf(iterf') orelse !early
 	      end
       in Stream(iter)
       end
